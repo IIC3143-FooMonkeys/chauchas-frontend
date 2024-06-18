@@ -6,12 +6,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches: [ "main" ]
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: amazon/aws-cli:latest
 
     steps:
       - name: Checkout code
@@ -29,9 +27,16 @@ jobs:
         run: |
           echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.REACT_APP_AUTH0_DOMAIN }}" >> .env
           echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.REACT_APP_AUTH0_CLIENT_ID }}" >> .env
-          
+
       - name: Build app
         run: npm run build
+
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
 
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
