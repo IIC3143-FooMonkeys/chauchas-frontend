@@ -15,6 +15,7 @@ const Home = () => {
         <div>
           <h1 className='Home-title'>Welcome {user.name}!</h1>
           <h2 className='Home-title'>Pulsa para acceder a los descuentos</h2>
+          <h2 className='Home-title'>cfvalidation test</h2>
         </div>
       )}
     </div>
