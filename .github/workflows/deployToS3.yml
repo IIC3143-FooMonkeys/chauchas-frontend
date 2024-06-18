@@ -1,4 +1,4 @@
-name: Web Deployment to S3
+name: Web Deployment to S3 + CF Invalidation
 
 on:
   push:
