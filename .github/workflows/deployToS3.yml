@@ -1,4 +1,4 @@
-name: Web Deployment to S3 + No CF V
+name: Web Deployment to S3
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches: [ "main" ]
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,24 +27,15 @@ jobs:
         run: |
           echo "REACT_APP_AUTH0_DOMAIN=${{ secrets.REACT_APP_AUTH0_DOMAIN }}" >> .env
           echo "REACT_APP_AUTH0_CLIENT_ID=${{ secrets.REACT_APP_AUTH0_CLIENT_ID }}" >> .env
-          echo "SERVER_IP=${{ secrets.SERVER_IP }}" >> .env
-
       - name: Build app
         run: npm run build
-
-      - name: Install AWS CLI
-        uses: unfor19/install-aws-cli-action@v1
-        with:
-          version: 2
-          verbose: false
-          arch: amd64
 
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl public-read
         env:
-          SOURCE_DIR: 'build/'
+          SOURCE_DIR: build/
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
