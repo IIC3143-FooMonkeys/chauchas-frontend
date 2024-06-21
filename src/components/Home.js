@@ -1,19 +1,24 @@
-import { useAuth0 } from '@auth0/auth0-react'
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 
 const Home = () => {
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0()
+  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
 
   const [discounts, setDiscounts] = useState([]);
+  const [filter, setFilter] = useState({
+    cardType: '',
+    paymentType: '',
+    bankName: '',
+  });
 
   useEffect(() => {
     fetchDiscounts();
   }, []);
+
+  useEffect(() => {
+    // Opcionalmente, aquí podrías filtrar los descuentos directamente después de cargarlos
+  }, [filter]);
 
   const fetchDiscounts = async () => {
     try {
@@ -25,37 +30,78 @@ const Home = () => {
     }
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const filteredDiscounts = discounts.filter((discount) =>
+    (filter.cardType ? discount.cardType.toLowerCase().includes(filter.cardType.toLowerCase()) : true) &&
+    (filter.paymentType ? discount.paymentType.toLowerCase().includes(filter.paymentType.toLowerCase()) : true) &&
+    (filter.bankName ? discount.bankName.toLowerCase().includes(filter.bankName.toLowerCase()) : true)
+  );
+
   return (
     <Container>
-    
-    <Container className="d-flex vh-100 justify-content-center align-items-center">
-      <Row>
-        <Col>
-          <img src={`${process.env.PUBLIC_URL}/4745-200.png`} alt="Descripción" />
-          <h1 className="display-1"><strong>Chauchas</strong></h1>
-          <p>Descubre todos los beneficios de tus tarjetas en un solo lugar</p>
-          {!isAuthenticated && (
-            <>
+      <Container className="d-flex vh-100 justify-content-center align-items-center">
+        <Row>
+          <Col>
+            <img src={`${process.env.PUBLIC_URL}/4745-200.png`} alt="Descripción" />
+            <h1 className="display-1"><strong>Chauchas</strong></h1>
+            <p>Descubre todos los beneficios de tus tarjetas en un solo lugar</p>
+            {!isAuthenticated && (
               <Button variant="secondary" onClick={() => loginWithRedirect()}>Inicia Sesión</Button>
-            </>
-          )}
-          {isAuthenticated && (
-            <>
-              <Button variant="secondary" href="#beneficios">Beneficios</Button>            
-            </>
-          )}
-        </Col>
-      </Row>
-    </Container>
-    
-    <div className="my-5 border-bottom"></div>
+            )}
+            {isAuthenticated && (
+              <Button variant="secondary" href="#beneficios">Beneficios</Button>
+            )}
+          </Col>
+        </Row>
+      </Container>
 
-    <Container id="beneficios">
-      <Row>
-        <h1>Beneficios</h1>
-        <div style={{ margin: '20px 0' }}></div>
-        
-        {discounts.map((discount, index) => (
+      <div className="my-5 border-bottom"></div>
+
+      <Container id="beneficios">
+        <Row>
+          <h1>Beneficios</h1>
+          <Form>
+            <Row>
+              Filtros:
+              <Col>
+              <Form.Control
+                type="text"
+                name="bankName"
+                value={filter.bankName}
+                onChange={handleFilterChange}
+                placeholder="Banco"
+              />
+              </Col>
+              <Col>
+              <Form.Control
+                type="text"
+                name="cardType"
+                value={filter.cardType}
+                onChange={handleFilterChange}
+                placeholder="Tipo de Tarjeta"
+              />
+              </Col>
+              <Col>
+              <Form.Control
+                type="text"
+                name="paymentType"
+                value={filter.paymentType}
+                onChange={handleFilterChange}
+                placeholder="Tipo de Pago"
+              />
+              </Col>
+            </Row>
+          </Form>
+          <div style={{ margin: '20px 0' }}></div>
+          
+          {filteredDiscounts.map((discount) => (
             <Col md={3} key={discount.id} style={{ marginBottom: '20px' }}>
               <Card>
                 <Card.Header as="h5">{discount.local}</Card.Header>
@@ -73,12 +119,10 @@ const Home = () => {
               </Card>
             </Col>
           ))}
-
-      </Row>
+        </Row>
+      </Container>
     </Container>
+  );
+};
 
-    </Container>
-  )
-}
-
-export default Home
+export default Home;
