@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container'
 import { Link } from 'react-router-dom'
 import Navbar from 'react-bootstrap/Navbar'
-import NavDropdown from 'react-bootstrap/NavDropdown'
+import { Nav } from 'react-bootstrap';
 import { useAuth0 } from '@auth0/auth0-react'
 
 function NavBar () {
@@ -14,26 +14,20 @@ function NavBar () {
           <Navbar.Brand href='/'>Chauchas</Navbar.Brand>
         )}
         {isAuthenticated && (
-          <Navbar.Brand href='/flights'>Chauchas</Navbar.Brand>
+          <Navbar.Brand href='/'>Chauchas</Navbar.Brand>
         )}
         <Navbar.Toggle aria-controls='basic-navbar-nav' />
         <Navbar.Collapse id='basic-navbar-nav'>
           <div className='ms-auto d-flex align-items-end'>
             {!isAuthenticated && (
               <>
-                <NavDropdown title='Options' id='basic-nav-dropdown'>
-                  <NavDropdown.Item onClick={() => loginWithRedirect()}>Login</NavDropdown.Item>
-                  <NavDropdown.Divider />
-                </NavDropdown>
+                <Nav.Link onClick={() => loginWithRedirect()} className="me-3">Iniciar Sesión</Nav.Link>
               </>
             )}
             {isAuthenticated && (
               <>
-                <NavDropdown title='Options' id='basic-nav-dropdown'>
-                  <NavDropdown.Item as={Link} to='/profile'>Profile</NavDropdown.Item>
-                  <NavDropdown.Item onClick={() => logout()}> Logout </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                </NavDropdown>
+                <Nav.Link as={Link} to='/profile' className="me-3">Mi Perfil</Nav.Link>
+                <Nav.Link onClick={() => logout()} className="me-3">Cerrar Sesión</Nav.Link>
               </>
             )}
           </div>
