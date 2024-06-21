@@ -3,7 +3,7 @@ import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 
 const Home = () => {
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const [discounts, setDiscounts] = useState([]);
   const [filter, setFilter] = useState({
