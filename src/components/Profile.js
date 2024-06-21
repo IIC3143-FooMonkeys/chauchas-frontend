@@ -22,8 +22,8 @@ const Profile = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const userCardsUrl = `http://3.143.179.26/users/${user.sub}`;
-  const allCardsUrl = 'http://3.143.179.26/cards';
+  const userCardsUrl = `https://www.bozitoapi.online/users/${user.sub}`;
+  const allCardsUrl = 'https://www.bozitoapi.online/cards';
 
 
   // Tarjetas del usuario
@@ -84,7 +84,7 @@ const Profile = () => {
   const patchCard = async () => {
   
     try {
-      const response = await fetch(`http://3.143.179.26/users/${user.sub}/add-card/${selectedCard}`, {
+      const response = await fetch(`https://www.bozitoapi.online/users/${user.sub}/add-card/${selectedCard}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const Profile = () => {
   // Eliminar tarjeta del usuario
   const deleteCard = async (cardId) => {
     try {
-      const response = await fetch(`http://3.143.179.26/users/${user.sub}/delete-card/${cardId}`, {
+      const response = await fetch(`https://www.bozitoapi.online/users/${user.sub}/delete-card/${cardId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
