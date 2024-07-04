@@ -22,8 +22,12 @@ const Profile = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const userCardsUrl = `https://www.bozitoapi.online/users/${user.sub}`;
-  const allCardsUrl = 'https://www.bozitoapi.online/cards';
+  const userId = user.sub;
+  const userIdParts = userId.split('|');
+  const userIdClean = userIdParts.length > 1 ? userIdParts[1] : userIdParts[0];
+
+  const userCardsUrl = `https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}`;
+  const allCardsUrl = 'https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/cards';
 
 
   // Tarjetas del usuario
@@ -34,7 +38,6 @@ const Profile = () => {
           const response = await fetch(userCardsUrl);
           const data = await response.json();
           setUserCards(data.cards);
-          console.log(userCards);
           if (!response.ok) {
             throw new Error('No se pudo obtener una respuesta satisfactoria del servidor');
           }
@@ -45,7 +48,8 @@ const Profile = () => {
     };
   
     fetchCards();
-  }, [userCardsUrl, isAuthenticated, userCards]);
+  }, [userCardsUrl, isAuthenticated]);
+  
 
   // Todas las tarjetas
   useEffect(() => {
@@ -55,7 +59,6 @@ const Profile = () => {
           const response = await fetch(allCardsUrl);
           const data = await response.json();
           setAllCards(data);
-          console.log(allCards);
           if (!response.ok) {
             throw new Error('No se pudo obtener una respuesta satisfactoria del servidor');
           }
@@ -66,7 +69,8 @@ const Profile = () => {
     };
   
     fetchAllCards();
-  }, [allCardsUrl, isAuthenticated, allCards]);
+  }, [allCardsUrl, isAuthenticated]);
+  
 
   // Agrupar todas las tarjetas por banco
   const groupedOptions = allCards.reduce((groups, card) => {
@@ -84,7 +88,7 @@ const Profile = () => {
   const patchCard = async () => {
   
     try {
-      const response = await fetch(`https://www.bozitoapi.online/users/${user.sub}/add-card/${selectedCard}`, {
+      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}/add-card/${selectedCard}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +110,7 @@ const Profile = () => {
   // Eliminar tarjeta del usuario
   const deleteCard = async (cardId) => {
     try {
-      const response = await fetch(`https://www.bozitoapi.online/users/${user.sub}/delete-card/${cardId}`, {
+      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}/delete-card/${cardId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

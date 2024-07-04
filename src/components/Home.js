@@ -28,7 +28,7 @@ const Home = () => {
 
   const fetchDiscounts = async () => {
     try {
-      const response = await fetch('https://www.bozitoapi.online/discounts');
+      const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/discounts');
       const data = await response.json();
       setDiscounts(data);
     } catch (error) {
