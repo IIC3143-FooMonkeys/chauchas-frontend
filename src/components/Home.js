@@ -1,9 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
 const Home = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, user , getIdTokenClaims } = useAuth0();
 
   const [discounts, setDiscounts] = useState([]);
   const [filter, setFilter] = useState({
@@ -14,7 +15,12 @@ const Home = () => {
 
   useEffect(() => {
     fetchDiscounts();
-  }, []);
+    if (isAuthenticated) {
+      getIdTokenClaims().then(claims => {
+        console.log('Role', claims['dev-7irjhqu7bkli7s2c.us.auth0.com']);
+      });
+    }
+  }, [isAuthenticated, getIdTokenClaims]);
 
   useEffect(() => {
     // Opcionalmente, aquí podrías filtrar los descuentos directamente después de cargarlos
@@ -54,6 +60,11 @@ const Home = () => {
             <p>Descubre todos los beneficios de tus tarjetas en un solo lugar</p>
             {!isAuthenticated && (
               <Button variant="secondary" onClick={() => loginWithRedirect()}>Inicia Sesión</Button>
+            )}
+            {isAuthenticated && user.role === 'admin' && (
+              <Link to="/admin">
+                <Button variant="secondary">Dashboard de Administrador</Button>
+              </Link>
             )}
             {isAuthenticated && (
               <Button variant="secondary" href="#beneficios">Beneficios</Button>
