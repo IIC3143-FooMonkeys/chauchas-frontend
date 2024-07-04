@@ -26,6 +26,7 @@ function NavBar () {
             )}
             {isAuthenticated && (
               <>
+                <Nav.Link as={Link} to='/adminDashboard' className="me-3">Dashboard Administrador</Nav.Link>
                 <Nav.Link as={Link} to='/profile' className="me-3">Mi Perfil</Nav.Link>
                 <Nav.Link onClick={() => logout()} className="me-3">Cerrar Sesión</Nav.Link>
               </>
