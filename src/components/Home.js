@@ -37,9 +37,6 @@ const Home = () => {
       const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/banks');
       const data = await response.json();
       setBanks(data);
-      if (data.length > 0) {
-        setFilter((prev) => ({ ...prev, bankName: data[0].name }));
-      }
     } catch (error) {
       console.error('Error fetching banks:', error);
     }
@@ -50,9 +47,6 @@ const Home = () => {
       const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/cardType');
       const data = await response.json();
       setCardTypes(data);
-      if (data.length > 0) {
-        setFilter((prev) => ({ ...prev, cardType: data[0] }));
-      }
     } catch (error) {
       console.error('Error fetching cardTypes:', error);
     }
@@ -63,9 +57,6 @@ const Home = () => {
       const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/paymentMethod');
       const data = await response.json();
       setPaymentMethods(data);
-      if (data.length > 0) {
-        setFilter((prev) => ({ ...prev, paymentMethod: data[0] }));
-      }
     } catch (error) {
       console.error('Error fetching paymentMethods:', error);
     }
@@ -105,7 +96,7 @@ const Home = () => {
 
       <div className="my-5 border-bottom"></div>
 
-      <Container id="beneficios">
+      <Container id="beneficios" className='benefits-container'>
         <Row>
           <h1>Beneficios</h1>
           <Form>
@@ -151,24 +142,30 @@ const Home = () => {
           </Form>
           <div style={{ margin: '20px 0' }}></div>
           
-          {filteredDiscounts.map((discount) => (
-            <Col md={3} key={discount.id} style={{ marginBottom: '20px' }}>
-              <Card>
-                <Card.Header as="h5">{discount.local}</Card.Header>
-                <Card.Body>
-                  <Card.Title>{discount.discount}% de descuento</Card.Title>
-                  <Card.Text style={{ textAlign: 'left' }}>
-                    {discount.description}<br/>
-                    <strong>Válido hasta:</strong> {new Date(discount.expiration).toLocaleDateString()}<br/>
-                    <strong>Días:</strong> {discount.days}<br/>
-                    <strong>Tarjeta:</strong> {discount.cardType} - {discount.paymentType}<br/>
-                    <strong>Banco:</strong> {discount.bankName}
-                  </Card.Text>
-                  <Button variant="secondary" href={discount.url}>Ver más detalles</Button>
-                </Card.Body>
-              </Card>
+          {filteredDiscounts.length > 0 ? (
+            filteredDiscounts.map((discount) => (
+              <Col md={3} key={discount.id} style={{ marginBottom: '20px' }}>
+                <Card>
+                  <Card.Header as="h5">{discount.local}</Card.Header>
+                  <Card.Body>
+                    <Card.Title>{discount.discount}% de descuento</Card.Title>
+                    <Card.Text style={{ textAlign: 'left' }}>
+                      {discount.description}<br/>
+                      <strong>Válido hasta:</strong> {new Date(discount.expiration).toLocaleDateString()}<br/>
+                      <strong>Días:</strong> {discount.days}<br/>
+                      <strong>Tarjeta:</strong> {discount.cardType} - {discount.paymentType}<br/>
+                      <strong>Banco:</strong> {discount.bankName}
+                    </Card.Text>
+                    <Button variant="secondary" href={discount.url}>Ver más detalles</Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <Col>
+              <p>No se encontraron descuentos con estas características</p>
             </Col>
-          ))}
+          )}
         </Row>
       </Container>
     </Container>
