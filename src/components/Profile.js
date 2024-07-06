@@ -29,7 +29,6 @@ const Profile = () => {
   const userCardsUrl = `https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}`;
   const allCardsUrl = 'https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/cards';
 
-
   // Tarjetas del usuario
   useEffect(() => {
     const fetchCards = async () => {

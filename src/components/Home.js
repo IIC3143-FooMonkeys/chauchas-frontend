@@ -6,6 +6,9 @@ const Home = () => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const [discounts, setDiscounts] = useState([]);
+  const [banks, setBanks] = useState([]);
+  const [cardTypes, setCardTypes] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
   const [filter, setFilter] = useState({
     cardType: '',
     paymentType: '',
@@ -14,11 +17,10 @@ const Home = () => {
 
   useEffect(() => {
     fetchDiscounts();
+    fetchBanks();
+    fetchCardType();
+    fetchPaymentMethod();
   }, []);
-
-  useEffect(() => {
-    // Opcionalmente, aquí podrías filtrar los descuentos directamente después de cargarlos
-  }, [filter]);
 
   const fetchDiscounts = async () => {
     try {
@@ -27,6 +29,45 @@ const Home = () => {
       setDiscounts(data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
+    }
+  };
+
+  const fetchBanks = async () => {
+    try {
+      const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/banks');
+      const data = await response.json();
+      setBanks(data);
+      if (data.length > 0) {
+        setFilter((prev) => ({ ...prev, bankName: data[0].name }));
+      }
+    } catch (error) {
+      console.error('Error fetching banks:', error);
+    }
+  };
+
+  const fetchCardType = async () => {
+    try {
+      const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/cardType');
+      const data = await response.json();
+      setCardTypes(data);
+      if (data.length > 0) {
+        setFilter((prev) => ({ ...prev, cardType: data[0] }));
+      }
+    } catch (error) {
+      console.error('Error fetching cardTypes:', error);
+    }
+  };
+
+  const fetchPaymentMethod = async () => {
+    try {
+      const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/paymentMethod');
+      const data = await response.json();
+      setPaymentMethods(data);
+      if (data.length > 0) {
+        setFilter((prev) => ({ ...prev, paymentMethod: data[0] }));
+      }
+    } catch (error) {
+      console.error('Error fetching paymentMethods:', error);
     }
   };
 
@@ -71,31 +112,40 @@ const Home = () => {
             <Row>
               Filtros:
               <Col>
-              <Form.Control
-                type="text"
-                name="bankName"
-                value={filter.bankName}
-                onChange={handleFilterChange}
-                placeholder="Banco"
-              />
+                <Form.Select
+                  name="bankName"
+                  value={filter.bankName}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">Selecciona un banco</option>
+                  {banks.map((bank) => (
+                    <option key={bank.id} value={bank.name}>{bank.name}</option>
+                  ))}
+                </Form.Select>
               </Col>
               <Col>
-              <Form.Control
-                type="text"
-                name="cardType"
-                value={filter.cardType}
-                onChange={handleFilterChange}
-                placeholder="Tipo de Tarjeta"
-              />
+                <Form.Select
+                  name="cardType"
+                  value={filter.cardType}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">Selecciona un tipo de tarjeta</option>
+                  {cardTypes.map((cardType) => (
+                    <option key={cardType} value={cardType}>{cardType}</option>
+                  ))}
+                </Form.Select>
               </Col>
               <Col>
-              <Form.Control
-                type="text"
-                name="paymentType"
-                value={filter.paymentType}
-                onChange={handleFilterChange}
-                placeholder="Tipo de Pago"
-              />
+                <Form.Select
+                  name="paymentMethod"
+                  value={filter.paymentMethod}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">Selecciona un tipo de pago</option>
+                  {paymentMethods.map((paymentMethod) => (
+                    <option key={paymentMethod} value={paymentMethod}>{paymentMethod}</option>
+                  ))}
+                </Form.Select>
               </Col>
             </Row>
           </Form>
