@@ -1,17 +1,20 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, user } = useAuth0();
 
   const [discounts, setDiscounts] = useState([]);
+  const [userDiscounts, setUserDiscounts] = useState([]);
   const [banks, setBanks] = useState([]);
   const [cardTypes, setCardTypes] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [showUserDiscounts, setShowUserDiscounts] = useState(false);
   const [filter, setFilter] = useState({
     cardType: '',
-    paymentType: '',
+    paymentMethod: '',
     bankName: '',
   });
 
@@ -22,6 +25,12 @@ const Home = () => {
     fetchPaymentMethod();
   }, []);
 
+  useEffect(() => {
+    if (showUserDiscounts) {
+      fetchUserDiscounts();
+    }
+  }, [showUserDiscounts]);
+
   const fetchDiscounts = async () => {
     try {
       const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/discounts');
@@ -29,6 +38,21 @@ const Home = () => {
       setDiscounts(data);
     } catch (error) {
       console.error('Error fetching discounts:', error);
+    }
+  };
+
+  const fetchUserDiscounts = async () => {
+    if (!isAuthenticated || !user) return;
+
+    try {
+      const userId = user.sub;
+      const userIdParts = userId.split('|');
+      const userIdClean = userIdParts.length > 1 ? userIdParts[1] : userIdParts[0];
+      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}/discounts`);
+      const data = await response.json();
+      setUserDiscounts(data);
+    } catch (error) {
+      console.error('Error fetching user discounts:', error);
     }
   };
 
@@ -70,9 +94,13 @@ const Home = () => {
     }));
   };
 
-  const filteredDiscounts = discounts.filter((discount) =>
+  const handleCheckboxChange = (e) => {
+    setShowUserDiscounts(e.target.checked);
+  };
+
+  const filteredDiscounts = showUserDiscounts ? userDiscounts : discounts.filter((discount) =>
     (filter.cardType ? discount.cardType.toLowerCase().includes(filter.cardType.toLowerCase()) : true) &&
-    (filter.paymentType ? discount.paymentType.toLowerCase().includes(filter.paymentType.toLowerCase()) : true) &&
+    (filter.paymentMethod ? discount.paymentMethod.toLowerCase().includes(filter.paymentMethod.toLowerCase()) : true) &&
     (filter.bankName ? discount.bankName.toLowerCase().includes(filter.bankName.toLowerCase()) : true)
   );
 
@@ -138,6 +166,16 @@ const Home = () => {
                   ))}
                 </Form.Select>
               </Col>
+              {isAuthenticated && (
+                <Col>
+                  <Form.Check 
+                    type="checkbox"
+                    label="Ver solo mis beneficios"
+                    checked={showUserDiscounts}
+                    onChange={handleCheckboxChange}
+                  />
+                </Col>
+              )}
             </Row>
           </Form>
           <div style={{ margin: '20px 0' }}></div>
@@ -148,15 +186,11 @@ const Home = () => {
                 <Card>
                   <Card.Header as="h5">{discount.local}</Card.Header>
                   <Card.Body>
+                    <Card.Img variant="top" src={discount.imageUrl} alt="Descuento" />
                     <Card.Title>{discount.discount}% de descuento</Card.Title>
-                    <Card.Text style={{ textAlign: 'left' }}>
-                      {discount.description}<br/>
-                      <strong>Válido hasta:</strong> {new Date(discount.expiration).toLocaleDateString()}<br/>
-                      <strong>Días:</strong> {discount.days}<br/>
-                      <strong>Tarjeta:</strong> {discount.cardType} - {discount.paymentType}<br/>
-                      <strong>Banco:</strong> {discount.bankName}
-                    </Card.Text>
-                    <Button variant="secondary" href={discount.url}>Ver más detalles</Button>
+                    <Button variant="secondary" as={Link} to={`/discounts/${discount.id}`}>
+                      Ver más detalles
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>

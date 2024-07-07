@@ -1,0 +1,25 @@
+.AdminDashboard {
+    text-align: left;
+  }
+  
+  .AdminDashboard h1, .AdminDashboard h2 {
+    margin-bottom: 20px;
+  }
+  
+  .AdminDashboard .card {
+    margin-bottom: 20px;
+  }
+  
+  .AdminDashboard .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  
+  .AdminDashboard .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  
+  .AdminDashboard .table {
+    margin-top: 20px;
+  }
