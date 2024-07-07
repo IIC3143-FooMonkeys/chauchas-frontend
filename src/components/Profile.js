@@ -45,9 +45,10 @@ const Profile = () => {
   };
 
   // Obtener las tarjetas del usuario al cargar o al cambiar el estado de autenticación
+  
   useEffect(() => {
-    fetchCards();
-  }, [userCardsUrl, isAuthenticated]);
+    fetchCards(); // eslint-disable-next-line 
+  }, [userCardsUrl, isAuthenticated]);  
 
   // Obtener todas las tarjetas disponibles al cargar o al cambiar el estado de autenticación
   useEffect(() => {

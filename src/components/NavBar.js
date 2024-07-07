@@ -18,7 +18,7 @@ function NavBar () {
       const userIdClean = userIdParts.length > 1 ? userIdParts[1] : userIdParts[0];
       const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}`);
       const data = await response.json();
-      if (data.userType == 1){
+      if (data.userType === 1){
         setIsAdmin(true);
       }
     } catch (error) {
@@ -27,10 +27,10 @@ function NavBar () {
   };
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      fetchUser();
-    }
-  }, [isAuthenticated, user]);
+    if (isAuthenticated && user) { 
+      fetchUser(); 
+    } // eslint-disable-next-line 
+  }, [isAuthenticated, user]); 
 
   return (
     <Navbar expand='lg' className='bg-body-tertiary'>
