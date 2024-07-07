@@ -1,7 +1,6 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import { useParams } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 
 const Discount = () => {
   const { discountId } = useParams()

@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { Container, Row, Col, Button, Card, Form, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -17,8 +17,6 @@ const Home = () => {
     paymentMethod: '',
     bankName: '',
   });
-  const [selectedDiscount, setSelectedDiscount] = useState(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     fetchDiscounts();
@@ -28,10 +26,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (showUserDiscounts) {
-      fetchUserDiscounts();
-    }
-  }, [showUserDiscounts]);
+    if (showUserDiscounts) { 
+      fetchUserDiscounts(); 
+    } // eslint-disable-next-line 
+  }, [showUserDiscounts]); 
 
   const fetchDiscounts = async () => {
     try {
