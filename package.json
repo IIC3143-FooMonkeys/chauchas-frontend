@@ -22,8 +22,12 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"],
+    "testEnvironment": "jsdom"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +49,7 @@
   },
   "proxy": "http://3.143.179.26",
   "devDependencies": {
+    "@testing-library/dom": "^10.3.1",
     "jest": "^29.7.0"
   }
 }
