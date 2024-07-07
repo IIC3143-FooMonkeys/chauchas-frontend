@@ -23,3 +23,7 @@
 .Home-button:hover {
   background-color: #0056b3; /* Darker shade of blue on hover */
 }
+
+.benefits-container {
+  min-height: 100vh; /* Ajusta la altura mínima según tus necesidades */
+}

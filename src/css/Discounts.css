@@ -1,0 +1,38 @@
+.Discounts-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+  }
+
+.Discount-filters{
+  margin: 20px;
+}
+
+.filter-input{
+  margin: 5px;
+}
+
+.filter-button{
+  margin: 3px;
+  background-color: #007bff;
+  color: #ffffff; 
+  border: none; 
+  cursor: pointer;
+}
+
+h2 {
+    padding: 20px;
+}
+  
+  .Discounts {
+    width: 70%;
+  }
+
+.pagination {
+  margin:20px;
+  justify-content: right;
+}
+
+.pagination-item{
+  margin:5px;
+}

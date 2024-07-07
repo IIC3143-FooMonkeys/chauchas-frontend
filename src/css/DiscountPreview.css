@@ -1,0 +1,69 @@
+.Discount {
+    border: 2px solid #007bff;
+    color: black;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    display: flex;
+  }
+  
+  .Discount-column {
+    flex: 1;
+  }
+  
+  .Discount-info {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the content horizontally */
+    padding: 10px;
+  }
+  
+  .Discount-info img {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .Discount-details {
+    padding: 10px;
+  }
+
+  .Discount-button-div{
+    margin-top: 15%;
+  }
+  
+  .Discount-row {
+    margin-bottom: 5px;
+  }
+  
+  .Discount-link {
+    text-decoration: none; /* Elimina el subrayado del enlace */
+  }
+  
+  .Discount:hover {
+    background-color: #007bff; /* Cambia el color de fondo al pasar el cursor por encima */
+    color: #ffffff;
+}
+
+.status-approved {
+  border: 2px solid #639e03;
+}
+
+.status-pending {
+  border: 2px solid #007bff;
+}
+
+.status-rejected {
+  border: 2px solid #ec2d2d;
+}
+
+.status-approved:hover {
+  background-color: #639e03; /* Verde para aprobado */
+}
+
+.status-pending:hover {
+  background-color: #007bff; /* Azul para pendiente */
+}
+
+.status-rejected:hover {
+  background-color: #ec2d2d; /* Rojo para rechazado */
+}
