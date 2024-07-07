@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^13.5.0",
     "auth0": "^4.4.0",
     "axios": "^1.6.8",
@@ -43,5 +43,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://3.143.179.26"
+  "proxy": "http://3.143.179.26",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
