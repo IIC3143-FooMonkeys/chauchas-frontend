@@ -202,23 +202,6 @@ const Home = () => {
           )}
         </Row>
       </Container>
-
-      <Modal show={showDetailsModal} onHide={handleCloseDetailsModal} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles del Descuento</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedDiscount && (
-            <>
-              <p>{selectedDiscount.description}</p>
-              <p><strong>Válido hasta:</strong> {new Date(selectedDiscount.expiration).toLocaleDateString()}</p>
-              <p><strong>Días:</strong> {selectedDiscount.days}</p>
-              <p><strong>Tarjeta:</strong> {selectedDiscount.cardType} - {selectedDiscount.paymentType}</p>
-              <p><strong>Banco:</strong> {selectedDiscount.bankName}</p>
-            </>
-          )}
-        </Modal.Body>
-      </Modal>
     </Container>
   );
 };
