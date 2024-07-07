@@ -1,79 +1,173 @@
 // Profile.test.js
+
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import Profile from './Profile';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { useAuth0 } from '@auth0/auth0-react';
+import Profile from './Profile';
+import fetchMock from 'jest-fetch-mock'; // Importa jest-fetch-mock
 
-// Mockear useAuth0
-jest.mock('@auth0/auth0-react', () => ({
-  useAuth0: jest.fn(),
-}));
-
-const mockUser = {
-  sub: 'auth0|123456',
-  picture: 'https://example.com/picture.jpg',
-  name: 'Test User',
-  email: 'test@example.com',
-};
-
-const mockFetch = (url) => {
-  if (url.includes('users')) {
-    return Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ cards: [{ id: '1', bankName: 'Bank A', cardType: 'Credit', paymentMethod: 'Visa' }] }),
-    });
-  } else if (url.includes('cards')) {
-    return Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve([{ id: '2', bankName: 'Bank B', cardType: 'Debit', paymentMethod: 'MasterCard' }]),
-    });
-  }
-  return Promise.reject(new Error('not found'));
-};
-
-global.fetch = jest.fn().mockImplementation((url) => mockFetch(url));
+jest.mock('@auth0/auth0-react');
 
 describe('Profile Component', () => {
   beforeEach(() => {
     useAuth0.mockReturnValue({
-      user: mockUser,
+      user: {
+        sub: 'auth0|1234567890',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        picture: 'https://example.com/john-doe.jpg',
+      },
       isAuthenticated: true,
     });
   });
 
-  // RENDERIZAR EL PERFIL DE USUARIO
-
-  test('renders profile information', () => {
-    render(<Profile />);
-
-    expect(screen.getByText(/Test User/i)).toBeInTheDocument();
-    //expect(screen.getByText(/test@example.com/i)).toBeInTheDocument();
-    //expect(screen.getByAltText(/test user/i)).toBeInTheDocument();
+  beforeAll(() => {
+    fetchMock.enableMocks();
   });
 
-  // RENDERIZAR TARJETAS DE USUARIO
-
-  /*
-  test('renders user cards', async () => {
-    render(<Profile />);
-  
-    await screen.findByText(/Banco/i, {}, { timeout: 5000 });
-    await screen.findByText(/Credit - Visa/i);
+  afterEach(() => {
+    fetchMock.resetMocks();
   });
-  */
 
-  // MENSAJE DE USUARIO NO AUTENTICADO
-/*
-  test('shows message when not authenticated', () => {
-    useAuth0.mockReturnValue({
-      user: null,
-      isAuthenticated: false,
+  // **** MOSTRAR USUARIO **** //
+
+  test('Mostrar Datos de Usuario Logueado', () => {
+    render(<Profile />);
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
+    expect(screen.getByAltText('John Doe')).toBeInTheDocument();
+  });
+
+  // **** MOSTRAR TARJETA **** //
+
+  test('Mostrar Tarjetas del Usuario', async () => {
+    const mockUserCards = [
+      { id: 'card1', bankName: 'Banco A', cardType: 'Débito', paymentMethod: 'Visa' },
+      { id: 'card2', bankName: 'Banco B', cardType: 'Crédito', paymentMethod: 'Mastercard' },
+    ];
+
+    const mockAllCards = [
+      { id: 'card1', bankName: 'Banco A', cardType: 'Débito', paymentMethod: 'Visa' },
+      { id: 'card2', bankName: 'Banco B', cardType: 'Crédito', paymentMethod: 'Mastercard' },
+      { id: 'card3', bankName: 'Banco C', cardType: 'Crédito', paymentMethod: 'Visa' },
+    ];
+
+    fetchMock.mockResponseOnce(JSON.stringify({ cards: mockUserCards }));
+    fetchMock.mockResponseOnce(JSON.stringify(mockAllCards));
+
+    render(<Profile />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Banco A')).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Débito - Visa')).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Banco B')).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Crédito - Mastercard')).toBeInTheDocument();
+    });
+  });
+
+  // **** AÑADIR TARJETA **** //
+
+  test('Añadir Tarjeta al Usuario', async () => {
+    const mockUserCards = [
+      { id: 'card1', bankName: 'Banco A', cardType: 'Débito', paymentMethod: 'Visa' },
+    ];
+
+    const mockAllCards = [
+      { id: 'card1', bankName: 'Banco A', cardType: 'Débito', paymentMethod: 'Visa' },
+      { id: 'card2', bankName: 'Banco B', cardType: 'Crédito', paymentMethod: 'Mastercard' },
+    ];
+
+    fetchMock.mockResponseOnce(JSON.stringify({ cards: mockUserCards }));
+    fetchMock.mockResponseOnce(JSON.stringify(mockAllCards));
+
+    render(<Profile />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Banco A')).toBeInTheDocument();
     });
 
-    render(<Profile />);
+    fireEvent.click(screen.getByText('Añadir Tarjeta'));
 
-    expect(screen.getByText(/ /i)).toBeInTheDocument();
+    // modal
+    await waitFor(() => {
+      const elements = screen.getAllByText('Añadir Tarjeta');
+      expect(elements.length).toBeGreaterThan(0); // Verifica que al menos hay un elemento con el texto dado
+      // Puedes verificar cada elemento si lo necesitas:
+      elements.forEach(element => {
+        expect(element).toBeInTheDocument();
+      });
+    });
+
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'card2' } });
+
+    fireEvent.click(screen.getByText('Añadir'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(3); // Verifica que se hizo una llamada para añadir la tarjeta
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Banco B')).toBeInTheDocument(); // Verifica que la tarjeta añadida está en la lista
+    });
+
   });
-  */
+
+  // **** ELIMINAR TARJETA **** //
+
+  test('Eliminar Tarjeta del Usuario', async () => {
+    const mockUserCards = [
+      { id: 'card1', bankName: 'Banco A', cardType: 'Débito', paymentMethod: 'Visa' },
+      { id: 'card2', bankName: 'Banco B', cardType: 'Crédito', paymentMethod: 'Mastercard' },
+    ];
+  
+    const mockAllCards = [
+      { id: 'card2', bankName: 'Banco B', cardType: 'Crédito', paymentMethod: 'Mastercard' },
+    ];
+  
+    fetchMock.mockResponseOnce(JSON.stringify({ cards: mockUserCards }));
+    fetchMock.mockResponseOnce(JSON.stringify(mockAllCards));
+  
+    render(<Profile />);
+  
+    // Esperar a que se carguen las tarjetas del usuario
+    await waitFor(() => {
+      expect(screen.getByText('Banco A')).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Banco B')).toBeInTheDocument();
+    });
+  
+    // Obtener el elemento que contiene "Banco A"
+    const bancoAElem = screen.getByText('Banco A');
+    
+    // Verificar que el elemento con "Banco A" tiene el botón de eliminar
+    expect(within(bancoAElem).getByText('Eliminar')).toBeInTheDocument();
+  
+    // Simular clic en el botón de eliminar dentro de "Banco A"
+    const deleteButton = within(bancoAElem).getByText('Eliminar');
+    fireEvent.click(deleteButton);
+  
+    // Esperar a que se complete la solicitud de eliminación
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(3); // 1 para obtener tarjetas + 2 para eliminar tarjeta
+    });
+  
+    // Esperar a que se actualice la lista de tarjetas mostrada
+    await waitFor(() => {
+      expect(screen.queryByText('Banco A')).not.toBeInTheDocument();
+    }, { timeout: 5000 }); // Ajusta el tiempo de espera según la velocidad de tu aplicación
+  
+    // Verificar que la tarjeta "Banco B" aún esté presente
+    expect(screen.getByText('Banco B')).toBeInTheDocument();
+  });
 });
+
+

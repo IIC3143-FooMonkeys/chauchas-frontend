@@ -26,8 +26,16 @@
     "eject": "react-scripts eject"
   },
   "jest": {
-    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"],
-    "testEnvironment": "jsdom"
+    "setupFilesAfterEnv": [
+      "<rootDir>/node_modules/@testing-library/jest-dom"
+    ],
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "\\.(css|less|scss)$": "identity-obj-proxy"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -49,7 +57,13 @@
   },
   "proxy": "http://3.143.179.26",
   "devDependencies": {
+    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-react": "^7.24.7",
     "@testing-library/dom": "^10.3.1",
-    "jest": "^29.7.0"
+    "babel-jest": "^29.7.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3"
   }
 }
