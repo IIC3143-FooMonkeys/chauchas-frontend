@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Card, Form, Modal } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -17,6 +17,8 @@ const Home = () => {
     paymentMethod: '',
     bankName: '',
   });
+  const [selectedDiscount, setSelectedDiscount] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     fetchDiscounts();
@@ -93,7 +95,6 @@ const Home = () => {
       [name]: value,
     }));
   };
-
   const handleCheckboxChange = (e) => {
     setShowUserDiscounts(e.target.checked);
   };
@@ -178,8 +179,7 @@ const Home = () => {
               )}
             </Row>
           </Form>
-          <div style={{ margin: '20px 0' }}></div>
-          
+          <div style={{ margin: '20px 0' }}></div>         
           {filteredDiscounts.length > 0 ? (
             filteredDiscounts.map((discount) => (
               <Col md={3} key={discount.id} style={{ marginBottom: '20px' }}>
@@ -202,6 +202,23 @@ const Home = () => {
           )}
         </Row>
       </Container>
+
+      <Modal show={showDetailsModal} onHide={handleCloseDetailsModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles del Descuento</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedDiscount && (
+            <>
+              <p>{selectedDiscount.description}</p>
+              <p><strong>Válido hasta:</strong> {new Date(selectedDiscount.expiration).toLocaleDateString()}</p>
+              <p><strong>Días:</strong> {selectedDiscount.days}</p>
+              <p><strong>Tarjeta:</strong> {selectedDiscount.cardType} - {selectedDiscount.paymentType}</p>
+              <p><strong>Banco:</strong> {selectedDiscount.bankName}</p>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };
