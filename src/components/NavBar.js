@@ -3,9 +3,34 @@ import { Link } from 'react-router-dom'
 import Navbar from 'react-bootstrap/Navbar'
 import { Nav } from 'react-bootstrap';
 import { useAuth0 } from '@auth0/auth0-react'
+import React, { useState, useEffect} from 'react';
 
 function NavBar () {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0()
+  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0()
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const fetchUser = async () => {
+    if (!isAuthenticated || !user) return;
+
+    try {
+      const userId = user.sub;
+      const userIdParts = userId.split('|');
+      const userIdClean = userIdParts.length > 1 ? userIdParts[1] : userIdParts[0];
+      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}`);
+      const data = await response.json();
+      if (data.userType == 1){
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      console.error('Error fetching user discounts:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchUser();
+    }
+  }, [isAuthenticated, user]);
 
   return (
     <Navbar expand='lg' className='bg-body-tertiary'>
@@ -26,7 +51,9 @@ function NavBar () {
             )}
             {isAuthenticated && (
               <>
+              {isAdmin && (
                 <Nav.Link as={Link} to='/adminDashboard' className="me-3">Dashboard Administrador</Nav.Link>
+              )}
                 <Nav.Link as={Link} to='/profile' className="me-3">Mi Perfil</Nav.Link>
                 <Nav.Link onClick={() => logout()} className="me-3">Cerrar Sesión</Nav.Link>
               </>

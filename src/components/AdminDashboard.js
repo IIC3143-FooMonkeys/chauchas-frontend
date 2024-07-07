@@ -1,17 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Table, Modal, Form } from 'react-bootstrap';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const AdminDashboard = () => {
+  const { user, isLoading } = useAuth0();
   const [discounts, setDiscounts] = useState([]);
   const [users, setUsers] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [userType, setUserType] = useState(null);
+  const [userIdClean, setUserIdClean] = useState('');
 
   useEffect(() => {
-    fetchDiscounts();
-    fetchUsers();
-  }, []);
+    if (user) {
+      const userId = user.sub;
+      const userIdParts = userId.split('|');
+      const userIdCleanTemp = userIdParts.length > 1 ? userIdParts[1] : userIdParts[0];
+      setUserIdClean(userIdCleanTemp);
+      fetchUserType(userIdCleanTemp);
+    }
+  }, [user]);
+
+  const fetchUserType = async (userIdClean) => {
+    try {
+      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${userIdClean}`);
+      const data = await response.json();
+      setUserType(data.userType);
+    } catch (error) {
+      console.error('Error fetching user type:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (userType === 1) {
+      fetchDiscounts();
+      fetchUsers();
+    }
+  }, [userType]);
 
   const fetchDiscounts = async () => {
     try {
@@ -25,17 +51,17 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-        const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users');
-        const data = await response.json();
-        setUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
+      const response = await fetch('https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users');
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
   };
 
   const deleteDiscount = async (id) => {
     try {
-      await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/discounts/${id}`, {
+      await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/discounts/${id}?userId=${userIdClean}`, {
         method: 'DELETE'
       });
       setDiscounts(discounts.filter(discount => discount.id !== id));
@@ -46,10 +72,10 @@ const AdminDashboard = () => {
 
   const deleteUser = async (id) => {
     try {
-      await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${id}`, {
+      await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/users/${id}?userId=${userIdClean}`, {
         method: 'DELETE'
       });
-      setUsers(users.filter(user => user.id !== id));
+      setUsers(users.filter(user => user.auth0Id !== id));
     } catch (error) {
       console.error('Error deleting user:', error);
     }
@@ -70,7 +96,7 @@ const AdminDashboard = () => {
 
   const handleEditSubmit = async () => {
     try {
-      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/${currentEditItem.type}/${currentEditItem.id}`, {
+      const response = await fetch(`https://9ywm0s7211.execute-api.us-east-1.amazonaws.com/chauchas/${currentEditItem.type}/${currentEditItem.id}?userId=${userIdClean}`, {
         method: 'PUT', // or 'PATCH'
         headers: {
           'Content-Type': 'application/json'
@@ -81,13 +107,21 @@ const AdminDashboard = () => {
       if (currentEditItem.type === 'discounts') {
         setDiscounts(discounts.map(item => item.id === updatedItem.id ? updatedItem : item));
       } else if (currentEditItem.type === 'users') {
-        setUsers(users.map(item => item.id === updatedItem.id ? updatedItem : item));
+        setUsers(users.map(item => item.auth0Id === updatedItem.auth0Id ? updatedItem : item));
       }
       setShowEditModal(false);
     } catch (error) {
       console.error('Error updating item:', error);
     }
   };
+
+  if (isLoading || userType === null) {
+    return <div>Loading...</div>;
+  }
+
+  if (userType !== 1) {
+    return <div>Usted no es administrador</div>;
+  }
 
   return (
     <Container className="my-5">
@@ -148,37 +182,37 @@ const AdminDashboard = () => {
 
       <Row className="mt-5">
         <Col>
-            <h2 className="mb-3">Lista de Usuarios</h2>
-            <Table striped bordered hover>
+          <h2 className="mb-3">Lista de Usuarios</h2>
+          <Table striped bordered hover>
             <thead>
-                <tr>
+              <tr>
                 <th>ID</th>
                 <th>Tarjetas</th>
                 <th>Acciones</th>
-                </tr>
+              </tr>
             </thead>
             <tbody>
-                {users.map((user) => (
+              {users.map((user) => (
                 <tr key={user.auth0Id}>
-                    <td>{user.auth0Id}</td>
-                    <td>
+                  <td>{user.auth0Id}</td>
+                  <td>
                     <ul>
-                        {user.cards.map((card, index) => (
-                        <li key={index}>{card}</li>
-                        ))}
+                      {user.cards.map((card, index) => (
+                        <li key={index}>
+                          ID: {card.id}, Bank ID: {card.bankId}, Type: {card.cardType}, Bank: {card.bankName}, Payment Method: {card.paymentMethod}
+                        </li>
+                      ))}
                     </ul>
-                    </td>
-                    <td>
-                    <Button variant="success" size="sm" className="me-2" onClick={() => handleShowEditModal({ ...user, type: 'users' })}>Editar</Button>
-                    <Button variant="danger" size="sm" onClick={() => deleteUser(user.id)}>Eliminar</Button>
-                    </td>
+                  </td>
+                  <td>
+                    <Button variant="danger" size="sm" onClick={() => deleteUser(user.auth0Id)}>Eliminar</Button>
+                  </td>
                 </tr>
-                ))}
+              ))}
             </tbody>
-            </Table>
+          </Table>
         </Col>
       </Row>
-
 
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
