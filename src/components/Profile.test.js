@@ -1,5 +1,3 @@
-// Profile.test.js
-
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
