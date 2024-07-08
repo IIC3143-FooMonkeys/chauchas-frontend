@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import '@testing-library/jest-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import Profile from './Profile';
-import fetchMock from 'jest-fetch-mock'; // Importa jest-fetch-mock
+import fetchMock from 'jest-fetch-mock';
 
 jest.mock('@auth0/auth0-react');
 
