@@ -29,11 +29,9 @@ describe('Discount Component', () => {
       bankName: 'Banco de Chile'
     };
 
-    // Mockear la respuesta de la API
     fetchMock.enableMocks();
     fetchMock.mockResponseOnce(JSON.stringify(mockDiscount));
 
-    // Renderizar el componente Discount dentro de un Router, pasando los datos mockeados
     render(
       <Router>
         <Discount />
