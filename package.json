@@ -4,9 +4,9 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
     "auth0": "^4.4.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
@@ -22,8 +22,20 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/node_modules/@testing-library/jest-dom"
+    ],
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "\\.(css|less|scss)$": "identity-obj-proxy"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -43,5 +55,15 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://3.143.179.26"
+  "proxy": "http://3.143.179.26",
+  "devDependencies": {
+    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-react": "^7.24.7",
+    "@testing-library/dom": "^10.3.1",
+    "babel-jest": "^29.7.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3"
+  }
 }

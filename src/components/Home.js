@@ -1,7 +1,8 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Card, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import '../css/Home.css';
 
 const Home = () => {
   const { isAuthenticated, loginWithRedirect, user } = useAuth0();
@@ -181,8 +182,13 @@ const Home = () => {
           {filteredDiscounts.length > 0 ? (
             filteredDiscounts.map((discount) => (
               <Col md={3} key={discount.id} style={{ marginBottom: '20px' }}>
-                <Card>
-                  <Card.Header as="h5">{discount.local}</Card.Header>
+                <Card className="card-custom">
+                  <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip id={`tooltip-${discount.id}`}>{discount.local}</Tooltip>}
+                    >
+                    <Card.Header as="h5">{discount.local}</Card.Header>
+                  </OverlayTrigger>
                   <Card.Body>
                     <Card.Img variant="top" src={discount.imageUrl} alt="Descuento" />
                     <Card.Title>{discount.discount}% de descuento</Card.Title>
